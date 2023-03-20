@@ -235,14 +235,14 @@ Configuration Exceedio2022Hypervisor {
 
             MsiPackage InstallDellServiceModule {
                 ProductId = '{40432BC5-76F7-4B12-81D1-8EDE05204716}'
-                Path      = 'https://raw.githubusercontent.com/exceedio/Exceedio.Server/main/lib/iDRACSvcMod.msi'
+                Path      = 'https://github.com/exceedio/Exceedio.Server/releases/download/v1.0.0/iDRACSvcMod.msi'
                 Ensure    = 'Present'
                 DependsOn = '[xWindowsUpdateAgent]ConfigureAndInstallWindowsUpdates'
             }
 
             MsiPackage InstallDellOpenManageServerAdministrator {
                 ProductId = '{D5E7D351-DAD8-4995-ACF9-41C41C147328}'
-                Path      = 'https://raw.githubusercontent.com/exceedio/Exceedio.Server/main/lib/SysMgmtx64.msi'
+                Path      = 'https://github.com/exceedio/Exceedio.Server/releases/download/v1.0.0/SysMgmtx64.msi'
                 Ensure    = 'Present'
                 DependsOn = '[xWindowsUpdateAgent]ConfigureAndInstallWindowsUpdates'
             }
