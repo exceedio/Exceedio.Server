@@ -87,18 +87,6 @@ Configuration Exceedio2022Hypervisor {
             Enabled = 'True'
         }
 
-        Firewall AllowDellOMSA-In-TCP {
-            Ensure      = 'Present'
-            Name        = 'Dell-OMSA-In-TCP'
-            DisplayName = 'Dell OpenManage Server Administrator'
-            Enabled     = 'True'
-            Profile     = 'Any'
-            Direction   = 'Inbound'
-            LocalPort   = '1311'
-            Protocol    = 'TCP'
-            Description = 'Firewall rule to allow traffic to TCP/1311 for Dell OMSA'
-        }
-
         FirewallProfile EnablePrivateFirewallProfile {
             Name                    = 'Private'
             Enabled                 = 'True'
@@ -247,6 +235,18 @@ Configuration Exceedio2022Hypervisor {
                 DependsOn = '[xWindowsUpdateAgent]ConfigureAndInstallWindowsUpdates'
             }
 
+            Firewall AllowDellOMSA-In-TCP {
+                Ensure      = 'Present'
+                Name        = 'Dell-OMSA-In-TCP'
+                DisplayName = 'Dell OpenManage Server Administrator'
+                Enabled     = 'True'
+                Profile     = 'Any'
+                Direction   = 'Inbound'
+                LocalPort   = '1311'
+                Protocol    = 'TCP'
+                Description = 'Firewall rule to allow traffic to TCP/1311 for Dell OMSA'
+            }
+    
             Script SecureDellOpenManageServerAdministrator {
                 SetScript  = {
                     & "C:\Program Files\Dell\SysMgt\oma\bin\omconfig.exe" --% preferences webserver attribute=ciphers setting=TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
