@@ -439,10 +439,10 @@ function Initialize-ExceedioHypervisor {
         [ValidateNotNullOrEmpty()]
         [String]
         $ComputerName,
-        [Parameter(Mandatory = $true, HelpMessage = 'The credentials for a local administrator that will be created')]
+        [Parameter(HelpMessage = 'The credentials for a local administrator that will be created')]
         [PSCredential]
         $LocalAdminCredential,
-        [Parameter(Mandatory = $true, HelpMessage = 'One or more UniqueId values from Get-Disk where virtual hard disks will be stored')]
+        [Parameter(HelpMessage = 'One or more UniqueId values from Get-Disk where virtual hard disks will be stored')]
         [String[]]
         $VirtualHardDiskStorageDisks,
         [Parameter(HelpMessage = 'Physical network adapter(s) that will be part of switch embedded team (SET)')]
