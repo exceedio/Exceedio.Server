@@ -22,11 +22,28 @@ Update-Module -Name Exceedio.Server
 
 ## Usage
 
+Open an elevated PowerShell prompt and use ```Import-Module -Name Exceedio.Server``` before doing anything else.
+
 ### Initialize a Windows Server 2022 Physical Server
 
+Using defaults:
+
 ```powershell
-Import-Module -Name Exceedio.Server
-Initialize-ExceedioHypervisor -ComputerName SV12345
+Initialize-ExceedioHypervisor -ComputerName SV12345 -LocalAdminCredential (Get-Credential)
+```
+
+Using all possible options:
+
+```powershell
+Initialize-ExceedioHypervisor `
+  -ComputerName SV12345 `
+  -LocalAdminCredential (Get-Credential) `
+  -VirtualHardDiskStorageDisks '5002538E409D13D2,5002538E409D13D3' `
+  -ExternalVirtualSwitchNics 'NIC2,NIC3,NIC4' `
+  -ExternalVirtualSwitchName 'External Virtual Switch' `
+  -VirtualMachinePath 'D:\Hyper-V' `
+  =VirtualHardDiskPath 'D:\Hyper-V\Virtual Hard Disks' `
+  -InstallMediaPath 'C:\Users\Public\Documents\ISO'
 ```
 
 You'll be prompted to answer some questions if the answers weren't provided as command line parameters. Specifically, you'll need to provide a comma-separated list of network interfaces to be used for VM traffic (e.g. NIC2,NIC3,NIC4) as well as a comma-separated list of disk IDs to be used for VM disk storage. You'll be presented with a list of possible disks to help make selection easier.
