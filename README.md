@@ -7,6 +7,18 @@ This module is designed to configure physical servers (e.g. Dell) and create and
 Run the following command in an elevated PowerShell session to install the module:
 
 ```powershell
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+Install-PackageProvider -Name Nuget -Force
+Remove-Module -Name PowerShellGet
+Install-Module -Name PowerShellGet -AllowClobber -Force
+Install-Module -Name PSDscResources -Repository PSGallery -RequiredVersion 2.12.0.0 -SkipPublisherCheck -Force
+Install-Module -Name ComputerManagementDsc -Repository PSGallery -RequiredVersion 9.0.0 -SkipPublisherCheck -Force
+Install-Module -Name NetworkingDsc -Repository PSGallery -RequiredVersion 9.0.0 -SkipPublisherCheck -Force
+Install-Module -Name StorageDsc -Repository PSGallery -RequiredVersion 5.1.0 -SkipPublisherCheck -Force
+Install-Module -Name xWindowsUpdate -Repository PSGallery -RequiredVersion 2.8.0.0 -SkipPublisherCheck -Force
+Install-Module -Name HyperVDsc -Repository PSGallery -RequiredVersion 4.0.0 -SkipPublisherCheck -Force -AllowPrerelease
+
+```powershell
 Install-Module -Name Exceedio.Server
 ```
 

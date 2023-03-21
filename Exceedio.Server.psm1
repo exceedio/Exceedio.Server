@@ -11,6 +11,7 @@ Configuration Exceedio2022Hypervisor {
         [String] $InstallMediaPath
     )
 
+    Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName PSDscResources
     Import-DscResource -ModuleName ComputerManagementDsc
     Import-DscResource -ModuleName HyperVDsc
@@ -68,7 +69,7 @@ Configuration Exceedio2022Hypervisor {
         }
 
         RemoteDesktopAdmin EnableRemoteDesktop {
-            IsSingleInstance   = $true
+            IsSingleInstance   = 'Yes'
             Ensure             = 'Present'
             UserAuthentication = 'Secure'
         }
@@ -135,7 +136,7 @@ Configuration Exceedio2022Hypervisor {
             LogIgnored              = 'NotConfigured'
         }
 
-        for ($i = 0; i -lt $VirtualHardDiskStorageDisks.Count; i++) {
+        for ($i = 0; $i -lt $VirtualHardDiskStorageDisks.Count; $i++) {
             
             Disk "DataVolume$i" {
                 DiskId             = $VirtualHardDiskStorageDisks[$i]
@@ -215,7 +216,7 @@ Configuration Exceedio2022Hypervisor {
             Package InstallDellSystemUpdate {
                 Name      = 'Dell System Update 2.0.2.0'
                 Path      = 'https://dl.dell.com/FOLDER09663875M/1/Systems-Management_Application_RWVV0_WN64_2.0.2.0_A00.EXE'
-                ProductId = = ''
+                ProductId = ''
                 Arguments = '/S'
                 Ensure    = 'Present'
                 DependsOn = '[xWindowsUpdateAgent]ConfigureAndInstallWindowsUpdates'
