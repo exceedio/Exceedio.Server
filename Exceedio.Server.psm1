@@ -263,7 +263,20 @@ Configuration Exceedio2022Hypervisor {
                 GetScript  = {
                     return @{ Result = "" }
                 }
-                DependsOn  = '[MsiPackage]InstallDellOpenManageServerAdministrator' 
+                DependsOn  = '[MsiPackage]InstallDellOpenManageServerAdministrator'
+            }
+
+            Script ConfigureBIOSSettings {
+                SetScript  = {
+                    & "C:\Program Files\Dell\SysMgt\oma\bin\omconfig.exe" --% chassis biossetup attribute=AcPwrRcvry setting=On
+                    & "C:\Program Files\Dell\SysMgt\oma\bin\omconfig.exe" --% chassis biossetup attribute=AcPwrRcvryDelay setting=Immediate
+                    & "C:\Program Files\Dell\SysMgt\oma\bin\omconfig.exe" --% chassis biossetup attribute=SriovGlobalEnable setting=Enabled
+                }
+                TestScript = {}
+                GetScript  = {
+                    return @{ Result = "" }
+                }
+                DependsOn  = '[MsiPackage]InstallDellOpenManageServerAdministrator'
             }
         }
     }
