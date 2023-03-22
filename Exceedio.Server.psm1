@@ -149,7 +149,7 @@ Configuration Exceedio2022Hypervisor {
                 ClearDisk          = $true
             }
 
-            i++
+            $i++
         }
 
         VMHost ConfigureHost {
