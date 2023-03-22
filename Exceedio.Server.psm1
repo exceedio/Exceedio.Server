@@ -470,6 +470,15 @@ function Initialize-ExceedioHypervisor {
         $ExternalVirtualSwitchNics = Read-Host 'Which NIC(s) belong to the team that handles virtual machines (e.g. NIC2,NIC3,NIC4)?'
     }
 
+    $ConfigurationData = @{
+        AllNodes = @(
+            @{
+                NodeName                    = 'localhost'
+                PSDscAllowPlainTextPassword = $true
+            }
+        )
+    }
+
     Exceedio2022Hypervisor `
         -ComputerName $ComputerName `
         -LocalAdminCredential $LocalAdminCredential `
@@ -478,7 +487,8 @@ function Initialize-ExceedioHypervisor {
         -VirtualMachinePath $VirtualMachinePath `
         -VirtualHardDiskPath $VirtualHardDiskPath `
         -InstallMediaPath $InstallMediaPath `
-        -OutputPath $OutputPath
+        -OutputPath $OutputPath `
+        -ConfigurationData $ConfigurationData
 
     Set-DscLocalConfigurationManager -Path $OutputPath
 
