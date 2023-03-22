@@ -3,8 +3,7 @@ Configuration Exceedio2022Hypervisor {
     param (
         [String] $ComputerName,
         [PSCredential] $LocalAdminCredential,
-        [String[]] $VirtualHardDiskStorageDisks,
-        [String[]] $ExternalVirtualSwitchNics,
+        [String] $ExternalVirtualSwitchNics,
         [String] $ExternalVirtualSwitchName,
         [String] $VirtualMachinePath,
         [String] $VirtualHardDiskPath,
@@ -136,17 +135,21 @@ Configuration Exceedio2022Hypervisor {
             LogIgnored              = 'NotConfigured'
         }
 
-        for ($i = 0; $i -lt $VirtualHardDiskStorageDisks.Count; $i++) {
+        $i = 0
+        foreach ($disk in (Get-Disk | Where-Object { $_.IsSystem -eq $false } | Sort-Object Size)) {
             
             Disk "DataVolume$i" {
-                DiskId             = $VirtualHardDiskStorageDisks[$i]
+                DiskId             = $disk.UniqueId
                 DiskIdType         = 'UniqueId'
                 DriveLetter        = @('D', 'E', 'F', 'G', 'H')[$i]
                 FSFormat           = 'ReFS'
                 FSLabel            = 'Data'
                 AllocationUnitSize = 64KB
-                AllowDestructive   = $false
+                AllowDestructive   = $true
+                ClearDisk          = $true
             }
+
+            i++
         }
 
         VMHost ConfigureHost {
@@ -163,12 +166,11 @@ Configuration Exceedio2022Hypervisor {
                     -AllowManagementOS $false `
                     -EnableEmbeddedTeaming $true `
                     -EnableIov (Get-VMHost).IovSupport `
-                    -MinimumBandwidthMode 'Weight' `
                     -Name $using:ExternalVirtualSwitchName `
-                    -NetAdapterName $using:ExternalVirtualSwitchNics
+                    -NetAdapterName ($using:ExternalVirtualSwitchNics).Split(',')
             }
             TestScript = {
-                ($null -ne (Get-VMSwitch -Name $using:ExternalVirtualSwitchName))
+                ($null -ne (Get-VMSwitch -Name $using:ExternalVirtualSwitchName -ErrorAction SilentlyContinue))
             }
             GetScript  = {
                 return @{
@@ -214,7 +216,7 @@ Configuration Exceedio2022Hypervisor {
         if ((Get-CimInstance CIM_ComputerSystem).Manufacturer -eq 'Dell Inc.') {
 
             Package InstallDellSystemUpdate {
-                Name      = 'Dell System Update 2.0.2.0'
+                Name      = 'DELL System Update'
                 Path      = 'https://dl.dell.com/FOLDER09663875M/1/Systems-Management_Application_RWVV0_WN64_2.0.2.0_A00.EXE'
                 ProductId = ''
                 Arguments = '/S'
@@ -443,11 +445,8 @@ function Initialize-ExceedioHypervisor {
         [Parameter(HelpMessage = 'The credentials for a local administrator that will be created')]
         [PSCredential]
         $LocalAdminCredential,
-        [Parameter(HelpMessage = 'One or more UniqueId values from Get-Disk where virtual hard disks will be stored')]
-        [String[]]
-        $VirtualHardDiskStorageDisks,
         [Parameter(HelpMessage = 'Physical network adapter(s) that will be part of switch embedded team (SET)')]
-        [String[]]
+        [String]
         $ExternalVirtualSwitchNics,
         [Parameter(HelpMessage = 'The name of the external virtual switch to create')]
         [String]
@@ -471,21 +470,9 @@ function Initialize-ExceedioHypervisor {
         $ExternalVirtualSwitchNics = Read-Host 'Which NIC(s) belong to the team that handles virtual machines (e.g. NIC2,NIC3,NIC4)?'
     }
 
-    if (-not $VirtualHardDiskStorageDisks) {
-        Get-Disk | Where-Object { $_.BusType -ne 'USB' } | Sort-Object Size -Descending | Format-Table UniqueId, FriendlyName, BusType, @{name = "Size (GB)"; Expression = { ($_.Size / 1GB).ToString('#.##') } }
-        Write-Host 'Important: You need to provide at least one unique ID here. If you have multiple disks'
-        Write-Host 'that you wish to use for virtual hard disk storage you can separate unique IDs using'
-        Write-Host 'commas with no spaces. Include your fastest disk first and then slower disk(s).'
-        Write-Host ''
-        Write-Host 'ANY DISKS CHOSEN HERE WILL BE FORMATTED!!!' -ForegroundColor Yellow
-        Write-Host ''
-        $VirtualHardDiskStorageDisks = Read-Host "Unique ID(s) of data disk(s)?"
-    }
-
     Exceedio2022Hypervisor `
         -ComputerName $ComputerName `
         -LocalAdminCredential $LocalAdminCredential `
-        -VirtualHardDiskStorageDisks $VirtualHardDiskStorageDisks `
         -ExternalVirtualSwitchNics $ExternalVirtualSwitchNics `
         -ExternalVirtualSwitchName $ExternalVirtualSwitchName `
         -VirtualMachinePath $VirtualMachinePath `
@@ -494,6 +481,7 @@ function Initialize-ExceedioHypervisor {
         -OutputPath $OutputPath
 
     Set-DscLocalConfigurationManager -Path $OutputPath
+
     Start-DscConfiguration -Path $OutputPath -Force -Wait -Verbose
 }
 
@@ -580,5 +568,6 @@ function New-ExceedioVM {
         -OutputPath $OutputPath
 
     Set-DscLocalConfigurationManager -Path $OutputPath
+
     Start-DscConfiguration -Path $OutputPath -Force -Wait -Verbose
 }
