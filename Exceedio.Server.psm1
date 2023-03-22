@@ -10,7 +10,7 @@ Configuration Exceedio2022Hypervisor {
         [String] $InstallMediaPath
     )
 
-    Import-DscResource -ModuleName PSDesiredStateConfiguration
+    #Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName PSDscResources
     Import-DscResource -ModuleName ComputerManagementDsc
     Import-DscResource -ModuleName HyperVDsc
